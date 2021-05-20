@@ -9,14 +9,14 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/vo"
 )
 
-func main() {
+func InitNacos(accessKey string, secretKey string, endpoint string, namespaceId string) {
 	// 从控制台命名空间管理的"命名空间详情"中拷贝 End Point、命名空间 ID
-	var endpoint = "${endpoint}"
-	var namespaceId = "${namespaceId}"
+	// var endpoint = "${endpoint}"
+	// var namespaceId = "${namespaceId}"
 
 	// 推荐使用 RAM 用户的 accessKey、secretKey
-	var accessKey = "${accessKey}"
-	var secretKey = "${secretKey}"
+	// var accessKey = "${accessKey}"
+	// var secretKey = "${secretKey}"
 
 	clientConfig := constant.ClientConfig{
 		//
@@ -37,7 +37,7 @@ func main() {
 		return
 	}
 
-	var dataId = "com.alibaba.nacos.example.properties"
+	var dataId = "app.properties"
 	var group = "DEFAULT_GROUP"
 
 	// 发布配置
