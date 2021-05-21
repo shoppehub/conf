@@ -1,24 +1,53 @@
 package conf
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"testing"
+
+	jww "github.com/spf13/jwalterweatherman"
 )
+
+func init() {
+	jww.SetLogThreshold(jww.LevelTrace)
+	jww.SetStdoutThreshold(jww.LevelInfo)
+
+	df := filepath.Join(UserHomeDir(), ".shoppe", "demo")
+	if !Exists(df) {
+		os.MkdirAll(df, os.ModePerm)
+		var yamlExample = []byte(`
+Hacker: false
+name: steve2
+`)
+
+		os.WriteFile(filepath.Join(df, "app.yaml"), yamlExample, os.ModePerm)
+	}
+}
 
 func TestInit(t *testing.T) {
 
 	Init("demo")
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatal(err)
+
+	name := GetString("name")
+	if name != "steve2" {
+		t.Fatal("getstring error")
 	}
 
-	fmt.Println(dir)
+	hacker := GetBool("Hacker")
+	if !hacker {
+		t.Fatal("getBool error")
+	}
 
-	str, _ := os.Getwd()
-	fmt.Println(str)
+	clothing := GetMap("clothing")
+
+	if clothing["jacket"] != "leather" {
+		t.Fatal("getmap error")
+	}
+
+	hobbies := GetStrings("hobbies")
+
+	if hobbies[0] != "skateboarding" {
+		t.Fatal("GetStrings error")
+	}
 
 }

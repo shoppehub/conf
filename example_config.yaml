@@ -1,7 +1,0 @@
-remote:
-  provider: nacos
-  url: acm.aliyun.com:8080
-  namespaceId: fb64a4c6-cbe6-4cf7-b4a5-2bb75ca7a6c3
-  groupName: demo
-  dataIds:
-    - demo

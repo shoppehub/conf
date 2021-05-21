@@ -1,54 +1,45 @@
 package conf
 
 import (
+	"bytes"
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/viper"
 )
 
-var v *viper.Viper
+var Instance *viper.Viper
+
+const CONFIG_NAME = "app.yaml"
 
 // 初始化应用配置
 func Init(appName string) {
 
-	v = viper.New()
+	Instance = viper.New()
 
-	v.SetConfigType("yaml")
+	Instance.SetConfigName(CONFIG_NAME)
+	Instance.SetConfigType("yaml")
+
 	if appName != "" {
-		config := "$HOME/.shoppe/" + appName + ".yaml"
-		if Exists(AbsPathify(config)) {
-			log.Println("load conf: " + AbsPathify(config))
-			v.AddConfigPath(config)
+		config := AbsPathify("$HOME/.shoppe/" + appName)
+		if Exists(config) {
+			log.Println("load conf: " + config + string(os.PathSeparator) + CONFIG_NAME)
+			ct, err := os.ReadFile(filepath.Join(config, CONFIG_NAME))
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(string(ct))
+
+			Instance.MergeConfig(bytes.NewReader(ct))
 		}
 	}
-
-	if envConfig := os.Getenv("config"); envConfig != "" {
-		v.AddConfigPath(envConfig)
+	envConfig := os.Getenv("config")
+	if envConfig != "" {
+		Instance.AddConfigPath(envConfig)
+	} else {
+		Instance.AddConfigPath("./")
 	}
-
-	v.MergeInConfig()
-
-	// initRemote()
-}
-
-func initRemote() {
-	if v.GetString("remote.provider") == "nacos" {
-		port := v.GetUint64("remote.port")
-		if port == 0 {
-			port = 8080
-		}
-		// nacos.NewNacosConfigManager(&nacos.Option{
-		// 	Url:         v.GetString("remote.url"),
-		// 	Port:        port,
-		// 	NamespaceId: "public",
-		// 	GroupName:   "DEFAULT_GROUP",
-		// 	Config:      nacos.Config{DataId: "config_dev"},
-		// 	Auth:        nil,
-		// })
-
-		v.AddRemoteProvider("", "", "")
-
-	}
-
+	Instance.MergeInConfig()
 }
