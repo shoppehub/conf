@@ -14,6 +14,8 @@ var Instance *viper.Viper
 
 const CONFIG_NAME = "app.yaml"
 
+var HOME = filepath.Join(UserHomeDir(), ".shoppe")
+
 // 初始化应用配置
 func Init(appName string) {
 
@@ -23,7 +25,7 @@ func Init(appName string) {
 	Instance.SetConfigType("yaml")
 
 	if appName != "" {
-		config := AbsPathify("$HOME/.shoppe/" + appName)
+		config := filepath.Join(HOME, appName)
 		if Exists(config) {
 			log.Println("load conf: " + config + string(os.PathSeparator) + CONFIG_NAME)
 			ct, err := os.ReadFile(filepath.Join(config, CONFIG_NAME))
